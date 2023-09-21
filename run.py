@@ -93,12 +93,11 @@ def check_balance(data, type_of_fs):
         col += 2
 
 
-def get_data_for_fs(type_of_fs):
+def get_data_for_fs(type_of_fs, user_data):
     # gets trial balance as a list of lists of strings
     # gets data entered by user as a dictionary
 
-    print(f'Extracting data for {type_of_fs}...')
-    user_data = get_gl_codes()
+    print(f'\nExtracting data for {type_of_fs}...\n')
     first_row, last_row = 0, 0
     for row in tb:
         if row[0] == user_data[type_of_fs][0]:
@@ -113,21 +112,15 @@ def get_data_for_fs(type_of_fs):
 
 
 def main():
-    sofp_in_tb, type_of_fs = get_data_for_fs('SOFP')
+    user_data = get_gl_codes()
+    sofp_in_tb, type_of_fs = get_data_for_fs('SOFP', user_data)
     check_balance(sofp_in_tb, type_of_fs)
-    sopl_data, fs_type = get_data_for_fs('SOPL')
+    sopl_data, fs_type = get_data_for_fs('SOPL', user_data)
     check_balance(sopl_data, fs_type)
-
 
 
 print('Welcome! This tool is only for accountants :)')
 print('You can use it for preparing FS from your Trial Balance.\n')
 
-# sofp = SHEET.worksheet("SOFP").get_all_values()
-# # sofp_data = sofp.get_all_values()
-# pprint(sofp)
-# print(sofp[2][4], sofp[4][0])
-# cell_list = SHEET.worksheet('Trial Balance').findall("Other Liabilities")
-# print(cell_list)
 
 main()
