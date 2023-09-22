@@ -14,6 +14,7 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('love-accountancy')
 
+# fetches values from all of the cells of the sheet to reduce API calls:
 tb = SHEET.worksheet("Trial Balance").get_all_values()
 
 
@@ -31,13 +32,12 @@ def get_gl_codes():
 
         print(f"Please enter first and last GL code for {statements[i]}.")
         print("It must be exactly same strings of signs as the GL Code in TB.")
-        print('Separate two numbers by comma, without spaces.')
 
-        user_data = input(f"Input two GL Codes for {statements[i]} here:\n")
+        user_data = input("Type GL Codes separated by a comma(e.g.: 400-e,3531) here:\n")
         user_data = user_data.split(',')
 
         if validate_data(user_data):
-            print(f'\nGot unique GL Codes for {statements[i]} : {user_data}\n')
+            print(f'Got unique GL Codes for {statements[i]} : {user_data}\n')
             # print("If it is wrong, don't worry just run program again.")
             data[statements[i]] = user_data
             if i == 1:
@@ -80,46 +80,61 @@ def check_balance(data, type_of_fs):
     """
     Checking if balance in given column of data is equel zero
     """
-    financial_periods = ['current period', 'previous period']
+    financial_periods = ['Current Period', 'Previous Period']
     col = 2  # financial results for current period
+    collection = {type_of_fs: {}}
     for i in range(len(financial_periods)):
-        print(f'Checking balance on {type_of_fs} data for {financial_periods[i]}...\n')
+        print(f'{financial_periods[i]}')
+        # print(f'    Checking balance on TB {type_of_fs} data ...')
         column = [row[col].replace('(', '-').replace(')', '') for row in data]
-    # print('Got column to calculate balance: ', column)
         float_column = [float(num.replace(',', '')) for num in column]
-    # print('float column: ', float_column)
         balance = sum(float_column)
-        print(f'Balance for {financial_periods[i]} on {type_of_fs} data is: {balance:,.2f}\n')
+        print(f'    {type_of_fs} Balance is:  {balance:,.2f}')
+        balance = sum([round(n) for n in float_column])
+        print(f'    {type_of_fs} Balance on Rounded Numbers is:  {balance:,.2f}\n')
+
+        # collecting data for financial statement worksheet
+        collection[type_of_fs][financial_periods[i]] = {}
+        for title in set([row[6] for row in data]):
+            collection[type_of_fs][financial_periods[i]][title] = []
+            for row in data:
+                if title == row[6]:
+                    num = float(row[col].replace('(', '-').replace(')', '').replace(',', ''))
+                    collection[type_of_fs][financial_periods[i]][title].append(num)
+        for k,v in collection[type_of_fs][financial_periods[i]].items():
+            collection[type_of_fs][financial_periods[i]][k] = sum(v)
+        print(collection)
         col += 2
+
+    return collection
 
 
 def get_data_for_fs(type_of_fs, user_data):
     # gets trial balance as a list of lists of strings
     # gets data entered by user as a dictionary
 
-    print(f'\nExtracting data for {type_of_fs}...\n')
+    print(f'\nExtracting data from TB for {type_of_fs}...\n')
     first_row, last_row = 0, 0
     for row in tb:
         if row[0] == user_data[type_of_fs][0]:
             first_row = tb.index(row) + 1
-            # print('first row num: ', first_row)
         if row[0] == user_data[type_of_fs][1]:
             last_row = tb.index(row) + 1
-            # print('last row num: ', last_row)
     table_for_fs = tb[first_row - 1:last_row]
-    # return needed part of TB worksheet as a list of lists
-    return table_for_fs, type_of_fs
+    # retuart of TB worksheet as a list of lists
+    # return type of financial statement
+    return type_of_fs, table_for_fs
 
 
 def main():
     user_data = get_gl_codes()
-    sofp_in_tb, type_of_fs = get_data_for_fs('SOFP', user_data)
-    check_balance(sofp_in_tb, type_of_fs)
-    sopl_data, fs_type = get_data_for_fs('SOPL', user_data)
-    check_balance(sopl_data, fs_type)
+    sofp, fp_table = get_data_for_fs('SOFP', user_data)
+    sofp_collection = check_balance(fp_table, sofp)
+    sopl, pl_table = get_data_for_fs('SOPL', user_data)
+    sopl_collection = check_balance(pl_table, sopl)
 
 
-print('Welcome! This tool is only for accountants :)')
+print('Welcome! This tool is  useful only for accountants :)')
 print('You can use it for preparing FS from your Trial Balance.\n')
 
 
