@@ -92,7 +92,7 @@ def check_balance(data, type_of_fs):
         balance = sum(float_column)
         print(f'    {type_of_fs} Balance is:  {balance:,.2f}')
         balance = sum([round(n) for n in float_column])
-        print(f'    {type_of_fs} Balance on Rounded Numbers is:  {balance:,.2f}\n')
+        print(f'    {type_of_fs} Balance on Rounded Numbers is: {balance:,.2f}\n')
 
         # collecting data for financial statement worksheet
         collection[type_of_fs][financial_periods[i]] = {}
@@ -102,7 +102,7 @@ def check_balance(data, type_of_fs):
                 if title == row[6]:
                     num = float(row[col].replace('(', '-').replace(')', '').replace(',', ''))
                     collection[type_of_fs][financial_periods[i]][title].append(num)
-        for k,v in collection[type_of_fs][financial_periods[i]].items():
+        for k, v in collection[type_of_fs][financial_periods[i]].items():
             collection[type_of_fs][financial_periods[i]][k] = sum(v)
         print(collection)
         col += 2
@@ -130,21 +130,33 @@ def get_data_for_fs(type_of_fs, user_data):
 def make_raport(raport_name, data_collection, g_worksheet):
     data_list = g_worksheet.get_all_values()
     col = 4
-    for p in ['Current Period', 'Previous Period']: 
-        print(f'  {p}:') 
+    for p in ['Current Period', 'Previous Period']:
+        print(f'  {p}:')
         for k, v in data_collection[raport_name][p].items():
-            count = 1
+            row_num = 1
             found = False
             for row in data_list:
                 if row[0] == k:
-                    g_worksheet.update_cell(count, col, v)
-                    print(f'{k} = {v} added to {raport_name} row:{count} col:{col}')
+                    try:
+                        if found:
+                            raise ValueError(f'"{k}" repeated in {raport_name}')
+                    except ValueError as e:
+                        print(f'\n   Check your FS! {e}, row {row_num}.\n')
+                        input('Press Enter to continue.')
+                    g_worksheet.update_cell(row_num, col, v)
+                    print(f'{k} = {v} , {raport_name} row:{row_num} col:{col}')
                     found = True
-                    break
-                count += 1
-            if not found:
-                print(f'Key : {k} Not found in {raport_name}. Check the worksheet!')
+                    # break
+                row_num += 1
+            try:
+                if not found:
+                    raise ValueError(f'"{k}" NOT found in {raport_name}!')
+            except ValueError as e:
+                print(f'\nCheck FS! {e}, value {v:,.2f} not assigned!\n')
+                input('Press Enter to continue.')
         col += 2
+
+
 
 
 def main():
