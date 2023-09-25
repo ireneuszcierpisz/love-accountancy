@@ -16,7 +16,8 @@ SHEET = GSPREAD_CLIENT.open('love-accountancy')
 
 # fetches values from all of the cells of the sheet to reduce API calls:
 tb = SHEET.worksheet("Trial Balance").get_all_values()
-
+sopl_worksheet = SHEET.worksheet("SOPL")
+sofp_worksheet = SHEET.worksheet("SOFP")
 
 def get_gl_codes():
     """
@@ -82,10 +83,10 @@ def check_balance(data, type_of_fs):
     """
     financial_periods = ['Current Period', 'Previous Period']
     col = 2  # financial results for current period
+    # dictionary to collect all data needed to create financial raports as SOFP and SOPL
     collection = {type_of_fs: {}}
     for i in range(len(financial_periods)):
         print(f'{financial_periods[i]}')
-        # print(f'    Checking balance on TB {type_of_fs} data ...')
         column = [row[col].replace('(', '-').replace(')', '') for row in data]
         float_column = [float(num.replace(',', '')) for num in column]
         balance = sum(float_column)
@@ -113,7 +114,7 @@ def get_data_for_fs(type_of_fs, user_data):
     # gets trial balance as a list of lists of strings
     # gets data entered by user as a dictionary
 
-    print(f'\nExtracting data from TB for {type_of_fs}...\n')
+    print(f'\nExtracting data from TB for {type_of_fs}...')
     first_row, last_row = 0, 0
     for row in tb:
         if row[0] == user_data[type_of_fs][0]:
@@ -126,12 +127,34 @@ def get_data_for_fs(type_of_fs, user_data):
     return type_of_fs, table_for_fs
 
 
+def make_raport(raport_name, data_collection, g_worksheet):
+    data_list = g_worksheet.get_all_values()
+    col = 4
+    for p in ['Current Period', 'Previous Period']: 
+        print(f'  {p}:') 
+        for k, v in data_collection[raport_name][p].items():
+            count = 1
+            found = False
+            for row in data_list:
+                if row[0] == k:
+                    g_worksheet.update_cell(count, col, v)
+                    print(f'{k} = {v} added to {raport_name} row:{count} col:{col}')
+                    found = True
+                    break
+                count += 1
+            if not found:
+                print(f'Key : {k} Not found in {raport_name}. Check the worksheet!')
+        col += 2
+
+
 def main():
     user_data = get_gl_codes()
     sofp, fp_table = get_data_for_fs('SOFP', user_data)
     sofp_collection = check_balance(fp_table, sofp)
     sopl, pl_table = get_data_for_fs('SOPL', user_data)
     sopl_collection = check_balance(pl_table, sopl)
+    make_raport('SOFP', sofp_collection, sofp_worksheet)
+    make_raport('SOPL', sopl_collection, sopl_worksheet)
 
 
 print('Welcome! This tool is  useful only for accountants :)')
