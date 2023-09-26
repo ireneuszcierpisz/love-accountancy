@@ -104,7 +104,7 @@ def check_balance(data, type_of_fs):
                     collection[type_of_fs][financial_periods[i]][title].append(num)
         for k, v in collection[type_of_fs][financial_periods[i]].items():
             collection[type_of_fs][financial_periods[i]][k] = sum(v)
-        print(collection)
+        # print(collection)
         col += 2
 
     return collection
@@ -128,10 +128,11 @@ def get_data_for_fs(type_of_fs, user_data):
 
 
 def make_raport(raport_name, data_collection, g_worksheet):
+    print(f'Generating raport {raport_name}...')
     data_list = g_worksheet.get_all_values()
     col = 4
     for p in ['Current Period', 'Previous Period']:
-        print(f'  {p}:')
+        # print(f'  {p}:')
         for k, v in data_collection[raport_name][p].items():
             row_num = 1
             found = False
@@ -144,9 +145,8 @@ def make_raport(raport_name, data_collection, g_worksheet):
                         print(f'\n   Check your FS! {e}, row {row_num}.\n')
                         input('Press Enter to continue.')
                     g_worksheet.update_cell(row_num, col, v)
-                    print(f'{k} = {v} , {raport_name} row:{row_num} col:{col}')
+                    # print(f'{k} = {v} , {raport_name} row:{row_num} col:{col}')
                     found = True
-                    # break
                 row_num += 1
             try:
                 if not found:
@@ -157,15 +157,36 @@ def make_raport(raport_name, data_collection, g_worksheet):
         col += 2
 
 
+def handle_data(g_worksheet):
+    # get financial statement as a list
+    print('Computing totals in FS...')
+    fs = g_worksheet.get_all_values()
+    for col in [3, 5]:
+        for i in range(len(fs)):
+            total = 0
+            if fs[i][0][:5] == "Total":
+                j = 1
+                while True:
+                    if fs[i - j][col] == '':
+                        break
+                    total += float(fs[i - j][col].replace(',', '.'))
+                    j += 1
+                g_worksheet.update_cell(i + 1, col + 1, total)
 
 
 def main():
     user_data = get_gl_codes()
+
     sofp, fp_table = get_data_for_fs('SOFP', user_data)
     sofp_collection = check_balance(fp_table, sofp)
+
     sopl, pl_table = get_data_for_fs('SOPL', user_data)
     sopl_collection = check_balance(pl_table, sopl)
+
     make_raport('SOFP', sofp_collection, sofp_worksheet)
+    handle_data(sofp_worksheet)
+    print('Your SOFP raport is ready. Check your Google Spreadsheet, please.')
+
     make_raport('SOPL', sopl_collection, sopl_worksheet)
 
 
