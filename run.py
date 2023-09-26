@@ -128,7 +128,7 @@ def get_data_for_fs(type_of_fs, user_data):
 
 
 def make_raport(raport_name, data_collection, g_worksheet):
-    print(f'Generating raport {raport_name}...')
+    print(f'...Generating raport {raport_name}...')
     data_list = g_worksheet.get_all_values()
     col = 4
     for p in ['Current Period', 'Previous Period']:
@@ -159,19 +159,29 @@ def make_raport(raport_name, data_collection, g_worksheet):
 
 def handle_data(g_worksheet):
     # get financial statement as a list
-    print('Computing totals in FS...')
+    print('   Computing totals in FS...')
     fs = g_worksheet.get_all_values()
     for col in [3, 5]:
+        t_o_t = 0
         for i in range(len(fs)):
             total = 0
+            
             if fs[i][0][:5] == "Total":
                 j = 1
+                flag = False
                 while True:
                     if fs[i - j][col] == '':
+                        if j == 1:
+                            flag = True
                         break
                     total += float(fs[i - j][col].replace(',', '.'))
                     j += 1
-                g_worksheet.update_cell(i + 1, col + 1, total)
+                t_o_t += total
+                if flag:
+                    g_worksheet.update_cell(i + 1, col + 1, t_o_t)
+                    t_o_t = 0
+                else:
+                    g_worksheet.update_cell(i + 1, col + 1, total)
 
 
 def main():
@@ -185,7 +195,7 @@ def main():
 
     make_raport('SOFP', sofp_collection, sofp_worksheet)
     handle_data(sofp_worksheet)
-    print('Your SOFP raport is ready. Check your Google Spreadsheet, please.')
+    print('\nSOFP raport is ready. Check your Google Spreadsheet, please.\n')
 
     make_raport('SOPL', sopl_collection, sopl_worksheet)
 
