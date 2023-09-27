@@ -130,6 +130,13 @@ def get_data_for_fs(type_of_fs, user_data):
 def make_raport(raport_name, data_collection, g_worksheet):
     print(f'...Generating raport {raport_name}...')
     data_list = g_worksheet.get_all_values()
+    # gets range of worksheet rows containing assets
+    first, last = 0, 0
+    for i in range(len(data_list)):
+        if data_list[i][0] == 'ASSETS':
+            first = i
+        if data_list[i][0] == 'EQUITY':
+            last = i
     col = 4
     for p in ['Current Period', 'Previous Period']:
         # print(f'  {p}:')
@@ -144,7 +151,10 @@ def make_raport(raport_name, data_collection, g_worksheet):
                     except ValueError as e:
                         print(f'\n   Check your FS! {e}, row {row_num}.\n')
                         input('Press Enter to continue.')
-                    g_worksheet.update_cell(row_num, col, v)
+                    if row_num < last and row_num > first:
+                        g_worksheet.update_cell(row_num, col, round(v))
+                    else:
+                        g_worksheet.update_cell(row_num, col, round(-1 * v))
                     # print(f'{k} = {v} , {raport_name} row:{row_num} col:{col}')
                     found = True
                 row_num += 1
@@ -165,7 +175,6 @@ def handle_data(g_worksheet):
         t_o_t = 0
         for i in range(len(fs)):
             total = 0
-            
             if fs[i][0][:5] == "Total":
                 j = 1
                 flag = False
@@ -175,6 +184,7 @@ def handle_data(g_worksheet):
                             flag = True
                         break
                     total += float(fs[i - j][col].replace(',', '.'))
+                    print(f'got r{i-j+1} c{col+1}')
                     j += 1
                 t_o_t += total
                 if flag:
@@ -182,6 +192,7 @@ def handle_data(g_worksheet):
                     t_o_t = 0
                 else:
                     g_worksheet.update_cell(i + 1, col + 1, total)
+                    # print(f'r{i+1} c{col+1} updated')
 
 
 def main():
@@ -195,9 +206,11 @@ def main():
 
     make_raport('SOFP', sofp_collection, sofp_worksheet)
     handle_data(sofp_worksheet)
-    print('\nSOFP raport is ready. Check your Google Spreadsheet, please.\n')
+    print('\nSOFP report is ready in your google spreadsheet.\n')
 
     make_raport('SOPL', sopl_collection, sopl_worksheet)
+    handle_data(sopl_worksheet)
+    print('\nSOPL report is ready in your google spreadsheet.\n')
 
 
 print('Welcome! This tool is  useful only for accountants :)')
