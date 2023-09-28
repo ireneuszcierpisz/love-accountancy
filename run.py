@@ -31,10 +31,10 @@ def get_gl_codes():
     i = 0
     while True:
 
-        print(f"Please enter first and last GL code for {statements[i]}.")
-        print("It must be exactly same strings of signs as the GL Code in TB.")
+        print(f"Please find in TB first and last GL code for {statements[i]}.")
+        print("In this e.g. 40001,86000 for SOPL and 1,35001 for SOFP")
 
-        user_data = input("Type GL Codes separated by a comma(e.g.: 400-e,3531) here:\n")
+        user_data = input("Type GL Codes separated by a comma here:\n")
         user_data = user_data.split(',')
 
         if validate_data(user_data):
@@ -71,7 +71,7 @@ def validate_data(values):
         if len(values) != 2:
             raise ValueError(f'Two values required, provided {len(values)}')
     except ValueError as e:
-        print(f'Invalid data: {e}, please try again.\n')
+        print(f'\n   ! Invalid data: {e}, please try again.\n')
         return False
 
     return True
@@ -81,18 +81,19 @@ def check_balance(data, type_of_fs):
     """
     Checking if balance in given column of data is equel zero
     """
+    print('Checking the balance...')
     financial_periods = ['Current Period', 'Previous Period']
     col = 2  # financial results for current period
     # dictionary to collect all data needed to create financial raports as SOFP and SOPL
     collection = {type_of_fs: {}}
     for i in range(len(financial_periods)):
-        print(f'{financial_periods[i]}')
+        print(f'  {financial_periods[i]}')
         column = [row[col].replace('(', '-').replace(')', '') for row in data]
         float_column = [float(num.replace(',', '')) for num in column]
         balance = sum(float_column)
         print(f'    {type_of_fs} Balance is:  {balance:,.2f}')
-        balance = sum([round(n) for n in float_column])
-        print(f'    {type_of_fs} Balance on Rounded Numbers is: {balance:,.2f}\n')
+        # balance = sum([round(n) for n in float_column])
+        # print(f'    {type_of_fs} Balance on Rounded Numbers is: {balance:,.2f}\n')
 
         # collecting data for financial statement worksheet
         collection[type_of_fs][financial_periods[i]] = {}
@@ -106,7 +107,7 @@ def check_balance(data, type_of_fs):
             collection[type_of_fs][financial_periods[i]][k] = sum(v)
         # print(collection)
         col += 2
-
+    print('-----------------\n')
     return collection
 
 
@@ -114,7 +115,7 @@ def get_data_for_fs(type_of_fs, user_data):
     # gets trial balance as a list of lists of strings
     # gets data entered by user as a dictionary
 
-    print(f'\nExtracting data from TB for {type_of_fs}...')
+    print(f'Extracting data from TB for {type_of_fs}...')
     first_row, last_row = 0, 0
     for row in tb:
         if row[0] == user_data[type_of_fs][0]:
@@ -122,13 +123,13 @@ def get_data_for_fs(type_of_fs, user_data):
         if row[0] == user_data[type_of_fs][1]:
             last_row = tb.index(row) + 1
     table_for_fs = tb[first_row - 1:last_row]
-    # retuart of TB worksheet as a list of lists
-    # return type of financial statement
+    # return TB worksheet as a list of lists
+    # return name of type of financial statement
     return type_of_fs, table_for_fs
 
 
 def make_raport(raport_name, data_collection, g_worksheet):
-    print(f'...Generating raport {raport_name}...')
+    print(f'Generating report {raport_name}...')
     data_list = g_worksheet.get_all_values()
     # gets range of worksheet rows containing assets
     first, last = 0, 0
@@ -150,7 +151,7 @@ def make_raport(raport_name, data_collection, g_worksheet):
                             raise ValueError(f'"{k}" repeated in {raport_name}')
                     except ValueError as e:
                         print(f'\n   Check your FS! {e}, row {row_num}.\n')
-                        input('Press Enter to continue.')
+                        input('Press Enter to continue or Run Program again.')
                     if row_num < last and row_num > first:
                         g_worksheet.update_cell(row_num, col, round(v))
                     else:
@@ -168,8 +169,25 @@ def make_raport(raport_name, data_collection, g_worksheet):
 
 
 def handle_data(g_worksheet):
+    # ads style to the worksheet heading
+    g_worksheet.format("A1:F2", {
+        "backgroundColor": {
+            "red": 0.5,
+            "green": 1.0,
+            "blue": 0.5
+        },
+        "horizontalAlignment": "Left",
+        "textFormat": {
+            "foregroundColor": {
+                "red": 0.50,
+                "green": 0.50,
+                "blue": 0.50
+            },
+        "fontSize": 11,
+        }
+    })
     # get financial statement as a list
-    print('   Computing totals in FS...')
+    print('   Computing totals...')
     fs = g_worksheet.get_all_values()
     for col in [3, 5]:
         t_o_t = 0
@@ -184,7 +202,7 @@ def handle_data(g_worksheet):
                             flag = True
                         break
                     total += float(fs[i - j][col].replace(',', '.'))
-                    print(f'got r{i-j+1} c{col+1}')
+                    # print(f'got r{i-j+1} c{col+1}')
                     j += 1
                 t_o_t += total
                 if flag:
@@ -206,15 +224,15 @@ def main():
 
     make_raport('SOFP', sofp_collection, sofp_worksheet)
     handle_data(sofp_worksheet)
-    print('\nSOFP report is ready in your google spreadsheet.\n')
+    print('\nSOFP report is ready in google spreadsheet.\n')
 
     make_raport('SOPL', sopl_collection, sopl_worksheet)
     handle_data(sopl_worksheet)
-    print('\nSOPL report is ready in your google spreadsheet.\n')
+    print('\nSOPL report is ready in google spreadsheet.\n')
 
 
-print('Welcome! This tool is  useful only for accountants :)')
-print('You can use it for preparing FS from your Trial Balance.\n')
+print('    Welcome!')
+print('You can use that tool for preparing Financial Statements from the Trial Balance.\n')
 
 
 main()
