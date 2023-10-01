@@ -31,7 +31,7 @@ def get_gl_codes():
     i = 0
     while True:
 
-        print(f"Please find in TB first and last GL code for {statements[i]}.")
+        print(f"Enter the first and last GL code set in TB for {statements[i]}.")
         print("In this e.g. 40001,86000 for SOPL and 1,35001 for SOFP")
 
         user_data = input("Type GL Codes separated by a comma here:\n")
@@ -93,7 +93,8 @@ def check_balance(data, type_of_fs):
         balance = sum(float_column)
         print(f'    {type_of_fs} Balance is:  {balance:,.2f}')
         # balance = sum([round(n) for n in float_column])
-        # print(f'    {type_of_fs} Balance on Rounded Numbers is: {balance:,.2f}\n')
+        # balance = round(balance)
+        # print(f'    {type_of_fs} Balance on Rounded Numbers is: {balance:,}\n')
 
         # collecting data for financial statement worksheet
         collection[type_of_fs][financial_periods[i]] = {}
@@ -212,6 +213,42 @@ def handle_data(g_worksheet):
                     g_worksheet.update_cell(i + 1, col + 1, total)
                     # print(f'r{i+1} c{col+1} updated')
 
+    if g_worksheet == sopl_worksheet:
+        compute_loss(fs, g_worksheet)
+
+
+def compute_loss(fs, g_worksheet):
+    # declare operating loss, total finance loss, tax for the financial period variables
+    # ol_current, tfc_current, tftfp_current = 0, 0, 0
+    # ol_previous, tfc_previous, tftfp_previous = 0, 0, 0
+    # gets relevant data from finance statement
+    for i in range(len(fs)):
+        if "Operating loss" in fs[i][0]:
+            ol_current = int(fs[i][3])
+            ol_previous = int(fs[i][5]) 
+            continue
+        if "Total finance costs" in fs[i][0]:
+            tfc_current = int(fs[i][3])
+            tfc_previous = int(fs[i][5])
+            # Loss before tax, current period
+            lbtcp = ol_current + tfc_current
+            g_worksheet.update_cell(i + 3, 4, lbtcp)
+            # Loss before tax, previous period
+            lbtpp = ol_previous + tfc_previous
+            g_worksheet.update_cell(i + 3, 6, lbtpp)
+            continue
+        if "Tax for the financial period" in fs[i][0]:
+            tftfp_current = int(fs[i][3])
+            tftfp_previous = int(fs[i][5])
+            # Loss for the financial period, current period
+            lftfpc = lbtcp + tftfp_current
+            # print(f"Loss for the financial period, current period: {lftfpc:,}")
+            g_worksheet.update_cell(i + 3, 4, lftfpc)
+            # Loss for the financial period, previous period
+            lftfpp = lbtpp + tftfp_previous
+            # print(f"Loss for the financial period, previous period: {lftfpp:,}")
+            g_worksheet.update_cell(i + 3, 6, lftfpp)
+
 
 def main():
     user_data = get_gl_codes()
@@ -231,7 +268,7 @@ def main():
     print('\nSOPL report is ready in google spreadsheet.\n')
 
 
-print('    Welcome!')
+print('\n    Welcome! Please follow the instructions below.')
 print('You can use that tool for preparing Financial Statements from the Trial Balance.\n')
 
 
