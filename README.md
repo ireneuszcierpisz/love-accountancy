@@ -72,6 +72,7 @@
 
 
 - The program can validate the data provided by the user in several different cases:
+
 		1. The string entered does not match any general ledger (gl) code in the trial balance. 
 		
 	![Test on the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/test-case1.png)
@@ -115,17 +116,17 @@
 
 
   - The app was deployed out to the web by Heroku. The steps to deploy are as follows:
-  - From the Heroku dashboard click the “Create new app” button.
-  - Name app.
-  - Select region.
-  - Click settings section.
-  - Create config var as CREDS.
-  - Add buildpacks as Python and Node.js
-  - Select deploy section.
-  - Choose deployment method (GitHub).
-  - Search for your Github repository name.
-  - Click "connect” to link up Heroku app to Github repository code.
-  - Deploy using deploy branch option or automatic deploy.
+        - From the Heroku dashboard click the “Create new app” button.
+        - Name app.
+        - Select region.
+        - Click settings section.
+        - Create config var as CREDS.
+        - Add buildpacks as Python and Node.js
+        - Select deploy section.
+        - Choose deployment method (GitHub).
+        - Search for your Github repository name.
+        - Click "connect” to link up Heroku app to Github repository code.
+        - Deploy using deploy branch option or automatic deploy.
 
 
 
