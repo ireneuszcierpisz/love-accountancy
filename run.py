@@ -13,11 +13,11 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('love-accountancy')
 
-# fetches values from all of the cells of the Trial Balance (TB) spreadsheet 
+# fetches values from all of the cells of the Trial Balance (TB) spreadsheet
 # to reduce API calls:
 tb = SHEET.worksheet("Trial Balance").get_all_values()
 # Statement of Profit and Loss (SOPL) and
-# Statement of Financial Position (SOFP) 
+# Statement of Financial Position (SOFP)
 # worksheets as the global variables
 sopl_worksheet = SHEET.worksheet("SOPL")
 sofp_worksheet = SHEET.worksheet("SOFP")
@@ -35,10 +35,11 @@ def get_gl_codes():
     i = 0
     while True:
 
-        print(f"Enter the first and last GL code set in TB for {statements[i]}.")
-        print("In this e.g. 40001,86000 for SOPL and 1,35001 for SOFP")
+        print(f"Enter the first and last GL code \
+set in TB for {statements[i]}!")
+        print("In this case: 40001,86000 (for SOPL) or 1,35001 (for SOFP)")
 
-        user_data = input("Type GL Codes separated by a comma here:\n")
+        user_data = input("Type two GL Codes separated by a comma here:\n")
         user_data = user_data.split(',')
 
         if validate_data(user_data):
@@ -80,7 +81,7 @@ def validate_data(values):
 
 def check_balance(data, type_of_fs):
     """
-    Checking the sum of a given column of numbers in the Trial Balance 
+    Checking the sum of a given column of numbers in the Trial Balance
     worksheet as related to the relevant financial statements
     and collecting data for the financial statement.
     """
@@ -102,8 +103,10 @@ def check_balance(data, type_of_fs):
             collection[type_of_fs][financial_periods[i]][title] = []
             for row in data:
                 if title == row[6]:
-                    num = float(row[col].replace('(', '-').replace(')', '').replace(',', ''))
-                    collection[type_of_fs][financial_periods[i]][title].append(num)
+                    num = float(row[col].replace(
+                        '(', '-').replace(')', '').replace(',', ''))
+                    collection[type_of_fs][financial_periods[i]][title].append(
+                        num)
         for k, v in collection[type_of_fs][financial_periods[i]].items():
             collection[type_of_fs][financial_periods[i]][k] = sum(v)
         col += 2
@@ -158,7 +161,8 @@ def make_raport(raport_name, data_collection, g_worksheet):
                 if row[0] == k:
                     try:
                         if found:
-                            raise ValueError(f'"{k}" repeated in {raport_name}')
+                            raise ValueError(
+                                f'"{k}" repeated in {raport_name}')
                     except ValueError as e:
                         print(f'\n   Check your FS! {e}, row {row_num}.\n')
                         input('Press Enter to continue or Run Program again.')
@@ -173,7 +177,8 @@ def make_raport(raport_name, data_collection, g_worksheet):
                     raise ValueError(f'"{k}" NOT found in {raport_name}!')
             except ValueError as e:
                 print(f'\nCheck FS! {e}, value {v:,.2f} not assigned!\n')
-                input('Press Enter to continue.')
+                input('Fix {raport_name} and start over \
+                    or press Enter to continue.')
         col += 2
 
 
@@ -198,7 +203,7 @@ def handle_data(g_worksheet):
                 "green": 0.50,
                 "blue": 0.50
             },
-        "fontSize": 11,
+            "fontSize": 11,
         }
     })
     print('   Computing totals...')
@@ -210,7 +215,7 @@ def handle_data(g_worksheet):
             total = 0
             if fs[i][0][:5] == "Total":
                 j = 1
-                # the flag indicates whether the cell needs to be updated 
+                # the flag indicates whether the cell needs to be updated
                 # with the t_o_t value
                 flag = False
                 while True:
@@ -218,7 +223,7 @@ def handle_data(g_worksheet):
                         if j == 1:
                             flag = True
                         break
-                    total += float(fs[i - j][col].replace(',', '.'))
+                    total += int(fs[i - j][col])
                     j += 1
                 t_o_t += total
                 if flag:
@@ -283,7 +288,8 @@ def main():
 
 
 print('\n    Welcome! Please follow the instructions below.')
-print('You can use that tool for preparing Financial Statements from the Trial Balance.\n')
+print('You can use that tool for preparing Financial \
+Statements from the Trial Balance.\n')
 
 
 main()
