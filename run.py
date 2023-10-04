@@ -1,5 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
+import time
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -212,6 +213,7 @@ def handle_data(g_worksheet):
     for col in [3, 5]:
         t_o_t = 0   # total of totals variable
         for i in range(len(fs)):
+            time.sleep(300/1000)
             total = 0
             if fs[i][0][:5] == "Total":
                 j = 1
