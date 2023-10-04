@@ -1,5 +1,5 @@
 
-# The project is intended to be an attempt to create an application that would be a tool for accountants to create financial reports from the data contained in the Trial Balance. Available reports are: Statement of Profit and Loss (SOPL) and Statement of Financial Position (SOFP).
+## The project is intended to be an attempt to create an application that would be a tool for accountants to create financial reports from the data contained in the Trial Balance. Available reports are: Statement of Profit and Loss (SOPL) and Statement of Financial Position (SOFP).
 
 ![Picture1 of the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/Heroku mock terminal-Welcome.png)
 
