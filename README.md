@@ -1,7 +1,7 @@
 
 ## The project is intended to be an attempt to create an application that would be a tool for accountants to create financial reports from the data contained in the Trial Balance. Available reports are: Statement of Profit and Loss (SOPL) and Statement of Financial Position (SOFP).
 
-![Picture1 of the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/Heroku mock terminal-Welcome.png)
+![Picture1 of the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/Heroku-mock-terminal-Welcome.png)
 
 - The program begins with a welcome message.
 - Simple instructions printed on the terminal allow the user to enter the necessary data. 
@@ -10,7 +10,7 @@
 - The data completed in the SOFP and SOPL reports can be viewed by the user in a Google sheet.
 - Before clicking 'Run Program', the accountant prepares a blank report sheet.
 
-![Picture of blank fs worksheet](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/blank SOFP sheet before calculations.png)
+![Picture of blank fs worksheet](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/blank-SOFP-sheet-before-calculations.png)
 
 
 
@@ -27,7 +27,7 @@
 - Selects data for individual reports.
 - The financial statement spreadsheet is still blank.
 
-![Picture of blank fs worksheet](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/blank SOPL sheet before calculations.png)
+![Picture of blank fs worksheet](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/blank-SOPL-sheet-before-calculations.png)
 
 
 #### Prepares financial statement of a given type.
@@ -54,7 +54,7 @@
 
 #### Final message
 
-![Picture2 of the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/Heroku terminal-calc completed.png)
+![Picture2 of the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/Heroku-terminal-calc-completed.png)
 
 
 
@@ -71,7 +71,7 @@
 
 -  CI Python Linter validator did not detect any errors either
 
-  ![screenshot](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/CI Python Linter.png)
+  ![screenshot](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/CI-Python-Linter.png)
 
 
 
