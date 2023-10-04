@@ -115,18 +115,20 @@
 ## Deployment
 
 
-  - The app was deployed out to the web by Heroku. The steps to deploy are as follows:
-        - From the Heroku dashboard click the “Create new app” button.
-        - Name app.
-        - Select region.
-        - Click settings section.
-        - Create config var as CREDS.
-        - Add buildpacks as Python and Node.js
-        - Select deploy section.
-        - Choose deployment method (GitHub).
-        - Search for your Github repository name.
-        - Click "connect” to link up Heroku app to Github repository code.
-        - Deploy using deploy branch option or automatic deploy.
+  - The app was deployed out to the web by Heroku. 
+    - The steps to deploy are as follows:
+
+            - From the Heroku dashboard click the “Create new app” button.
+            - Name app.
+            - Select region.
+            - Click settings section.
+            - Create config var as CREDS.
+            - Add buildpacks as Python and Node.js
+            - Select deploy section.
+            - Choose deployment method (GitHub).
+            - Search for your Github repository name.
+            - Click "connect” to link up Heroku app to Github repository code.
+            - Deploy using deploy branch option or automatic deploy.
 
 
 
