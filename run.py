@@ -1,6 +1,8 @@
 import gspread
 from google.oauth2.service_account import Credentials
 import time
+import sys
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -129,6 +131,15 @@ def get_data_for_fs(type_of_fs, user_data):
             first_row = tb.index(row) + 1
         if row[0] == user_data[type_of_fs][1]:
             last_row = tb.index(row) + 1
+    try:
+        if first_row > last_row:
+            raise ValueError(
+                'The first GL code in the entered pair \
+must be higher in the TB table than the second!')
+    except ValueError as e:
+        print(f'Error: {e}.')
+        print('Invalid GL code pair! Start over.')
+        sys.exit(1)
     table_for_fs = tb[first_row - 1:last_row]
     # return part of the TB worksheet as a list of lists
     # returns the name of the financial statement type
@@ -213,7 +224,7 @@ def handle_data(g_worksheet):
     for col in [3, 5]:
         t_o_t = 0   # total of totals variable
         for i in range(len(fs)):
-            time.sleep(300/1000)
+            time.sleep(1)
             total = 0
             if fs[i][0][:5] == "Total":
                 j = 1
