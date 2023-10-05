@@ -20,7 +20,7 @@
 
 
 - The loop will repeatedly request data, until it is valid.
-- Raises ValueError if strings cannot be found as the GL code or there are more than one position with the same GL code or if there aren't exactly 2 values provided by the user.
+- Raises ValueError if strings cannot be found as the GL code or there are more than one position with the same GL code or if there are not exactly two values provided by the user.
 
 
 
@@ -34,12 +34,12 @@
 
 
 
-#### Prepares financial statement of a given type.
+#### Prepares financial statement (fs) of a given type.
 
 
 - Updates the worksheet with rounded values.
 - Changes the sign of the numbers where and if required for given fs.
-- Throws an error if any element in fs is not unique or there is no such element in TB.
+- Throws an error if any element in fs is not unique or if there is no item in fs that appears in TB.
 
 ![Picture of SOFP1](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/SOFP-1.png)
 
@@ -77,23 +77,27 @@
 		
 	![Test on the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/test-case1.png)
 
-		2. The user entered too many GL codes when there should be two. 
+        2. There are more than one position with the same GL code in TB.
+
+    ![Test on the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/test-case1a.png)
+
+		3. The user entered too many GL codes when there should be two. 
 		
 	![Test on the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/test-case2.png)
 	
-		3. The user entered only one GL code when there should be two.
+		4. The user entered only one GL code when there should be two.
 		
 	![Test on the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/test-case3.png)
 
-		4. The user has included more than one financial position with the same name in the financial statement (SOFP or SOPL) worksheet.
+		5. The user has included more than one financial position with the same name in the financial statement (SOFP or SOPL) worksheet.
 		
 	![Test on the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/test-case4.png)
 
-		5. The user does not placed in financial statement a financial position which does exist in trial balance.
+		6. The user does not placed in financial statement a financial position which does exist in trial balance.
 		
 	![Test on the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/test-case5.png)
 
-		6. The user inputed a pair of gl codes in the wrong order so program can not extract apropriate part of data from trial balance.
+		7. The user inputed a pair of gl codes in the wrong order so program can not extract apropriate part of data from trial balance.
 		
 	![Test on the Heroku mock terminal](https://github.com/ireneuszcierpisz/love-accountancy/blob/main/media/test-case6.png)
 
