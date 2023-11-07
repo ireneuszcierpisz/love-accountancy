@@ -2,6 +2,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import time
 import sys
+import math
 
 
 SCOPE = [
@@ -82,6 +83,46 @@ def validate_data(values):
     return True
 
 
+def make_rounding(nums):
+    print('      Rounding float numbers...')
+    well_rounded = False
+    i = 0
+    while not well_rounded:
+        float_sum = sum(nums)
+        int_nums = [round(n) for n in nums]
+        int_sum = sum(int_nums)
+        diff = round(int_sum - float_sum)
+        if diff > 0:
+            count = 0
+            while True:
+                if int(nums[i]) != nums[i] and int_nums[i] - nums[i] > 0:
+                    int_nums[i] = math.floor(nums[i])
+                    count += 1
+                    if count == diff:
+                        break
+                i += 1
+                if i == len(nums):
+                    break
+        if diff < 0:
+            count = 0
+            while True:
+                if int(nums[i]) != nums[i] and int_nums[i] - nums[i] < 0:
+                    int_nums[i] = math.ceil(nums[i])
+                    count += 1
+                    if count == -diff:
+                        break
+                i += 1
+                if i == len(nums):
+                    break
+        well_rounded = True
+        print('      Rounding finished!')
+        int_sum = sum(int_nums)
+        diff = round(int_sum - float_sum)
+        print(f'      The difference between the sum of an integer column and a floating point column: {diff}')
+    # returns list of integers
+    return int_nums
+
+
 def check_balance(data, type_of_fs):
     """
     Checking the sum of a given column of numbers in the Trial Balance
@@ -98,7 +139,8 @@ def check_balance(data, type_of_fs):
         print(f'  {financial_periods[i]}')
         column = [row[col].replace('(', '-').replace(')', '') for row in data]
         float_column = [float(num.replace(',', '')) for num in column]
-        balance = sum(float_column)
+        int_column = make_rounding(float_column)
+        balance = sum(int_column)
         print(f'    {type_of_fs} Balance is:  {balance:,.2f}')
         # collecting data for financial statement worksheet
         collection[type_of_fs][financial_periods[i]] = {}
@@ -245,16 +287,15 @@ def handle_data(g_worksheet):
                 else:
                     g_worksheet.update_cell(i + 1, col + 1, total)
 
-    if g_worksheet == sopl_worksheet:
-        compute_loss(fs, g_worksheet)
 
-
-def compute_loss(fs, g_worksheet):
+def compute_loss(g_worksheet):
     """
     Computes Loss Before Tax and Loss for the Financial Period
     for fs: Statement of Profit and Loss.
     Updating the appropriate cells in the SOPL report with loss values.
     """
+    print('\n   Calculating loss...')
+    fs = g_worksheet.get_all_values()
     # Retrieves the appropriate data from fs and performs the calculations
     for i in range(len(fs)):
         if "Operating loss" in fs[i][0]:
@@ -293,11 +334,12 @@ def main():
 
     make_raport('SOFP', sofp_collection, sofp_worksheet)
     handle_data(sofp_worksheet)
-    print('\nSOFP report is ready in google spreadsheet.\n')
+    print('\n SOFP report is ready in google spreadsheet.\n')
 
     make_raport('SOPL', sopl_collection, sopl_worksheet)
     handle_data(sopl_worksheet)
-    print('\nSOPL report is ready in google spreadsheet.\n')
+    compute_loss(sopl_worksheet)
+    print('\n SOPL report is ready in google spreadsheet.\n')
 
 
 print('\n    Welcome! Please follow the instructions below.')
